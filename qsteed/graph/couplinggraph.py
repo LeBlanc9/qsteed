@@ -114,6 +114,19 @@ class CouplingGraph:
             if not self.is_connected():
                 raise ValueError("Error: This coupling diagram is not connected.")
             self._distance_matrix = nx.floyd_warshall_numpy(self.graph)
+
+            # Find the maximum value of the node number
+            max_node = max(self.graph.nodes)
+
+            new_matrix = np.zeros((max_node + 1, max_node + 1))
+
+            # Fill the corresponding part of the new matrix with the original distance matrix
+            for i, node_i in enumerate(sorted(self.graph.nodes)):
+                for j, node_j in enumerate(sorted(self.graph.nodes)):
+                    new_matrix[node_i, node_j] = self._distance_matrix[i, j]
+
+            self._distance_matrix = new_matrix
+
         return self._distance_matrix
 
     def shortest_undirected_path(self, source_qubit, target_qubit):
@@ -141,9 +154,11 @@ class CouplingGraph:
         """
         if self._path_fidelity is None:
             self._path_fidelity = {}
-            nodes = len(self.graph.nodes)
-            for n1 in range(nodes - 1):
-                for n2 in range(n1 + 1, nodes):
+            nodes = list(self.graph.nodes)
+            nodes_num = len(nodes)
+            for i in range(nodes_num - 1):
+                for j in range(i + 1, nodes_num):
+                    n1, n2 = nodes[i], nodes[j]
                     swap_path = nx.shortest_path(self.graph, n1, n2)
                     if len(swap_path) == 2:  # not need swap
                         self._path_fidelity[(n1, n2)] = np.log(self.edge_dict[(swap_path[0], swap_path[1])])
