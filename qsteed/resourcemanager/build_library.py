@@ -72,7 +72,8 @@ class BuildLibrary:
                 qubit1 = qubit_to_int[gate_qubit[0]]
                 qubit2 = qubit_to_int[gate_qubit[1]]
                 gate_name = list(name_fidelity.keys())[0]
-                fidelity = name_fidelity[gate_name]['fidelity']
+                weight_name = list(name_fidelity[gate_name].keys())[0]
+                fidelity = name_fidelity[gate_name][weight_name]
                 directed_weighted_edges.append([qubit1, qubit2, fidelity])
 
         structure = sorted(directed_weighted_edges, key=lambda x: x[2], reverse=True)
@@ -120,15 +121,17 @@ class BuildLibrary:
             if len(cg.nodes()) >= qubits_need:
                 available_connected_substructure_list.append(cg)
 
+        weight_name = list(list(connected_substructure_list[0].edges(data=True))[0][2].keys())[0]
+
         if available_connected_substructure_list:
             while len(all_substructure) == 0:
                 for cg in available_connected_substructure_list:
                     # if len(cg.nodes()) >= qubits_need:
                     substructure_nodes = []  #
                     fidelity_threshold = fidelity_threshold_fixed  #
-                    sorted_edges = sorted(cg.edges(data=True), key=lambda x: x[2]['weight'], reverse=True)
+                    sorted_edges = sorted(cg.edges(data=True), key=lambda x: x[2][weight_name], reverse=True)
                     for elem in sorted_edges:
-                        if elem[2]['weight'] > fidelity_threshold:
+                        if elem[2][weight_name] > fidelity_threshold:
                             neighbors = PriorityQueue()
                             neighbors.put((-1, elem[0]))
                             ret_nodes = []
@@ -151,7 +154,7 @@ class BuildLibrary:
                                     break
                                 for neighbor in cg[node]:
                                     if not cg.nodes[neighbor]['visited']:
-                                        weight = cg[node][neighbor]['weight']
+                                        weight = cg[node][neighbor][weight_name]
                                         neighbors.put((-weight, neighbor))
                             out = []
                             for edge in structure:
