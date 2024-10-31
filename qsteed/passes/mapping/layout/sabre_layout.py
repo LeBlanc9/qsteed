@@ -145,6 +145,7 @@ class SabreLayout(BasePass):
                 # Method2: Choose a random initial_layout.
                 layout.generate_random_layout(len(dag.qubits_used), self.coupling_graph.num_qubits)
                 self.model.set_layout({'initial_layout': layout})
+                self.model.set_used_subgraph(self.coupling_graph)
             elif len(dag.qubits_used) < self.coupling_graph.num_qubits:
                 if self.initial_layout_method == 'random':
                     layout = RandomLayout(coupling_graph=self.coupling_graph, qubits_list=dag.qubits_used)
@@ -155,16 +156,12 @@ class SabreLayout(BasePass):
                 else:
                     raise ValueError("initial_layout_method can only be 'random', 'fidelity' or 'dense'.")
 
-                # subgraph = layout.layout(qubits_list=dag.qubits_used)
                 subgraph = layout.create_layout()
                 weight = list(list(subgraph.edges(data=True))[0][2].keys())[0]
                 sub_coupling_list = [(u, v, data[weight]) for u, v, data in subgraph.edges(data=True)]
                 used_subgraph = CouplingGraph(sub_coupling_list)
                 self.model.get_layout()["initial_layout"] = layout
-
                 self.model.set_used_subgraph(used_subgraph)
-
-                print(sub_coupling_list)
             else:
                 raise ValueError("The required qubits are more than the number of physical qubits.")
 
