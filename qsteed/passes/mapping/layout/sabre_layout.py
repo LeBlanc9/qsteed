@@ -187,8 +187,6 @@ class SabreLayout(BasePass):
         self.routing_pass.modify_dag = True
         self.nodes_label = []
         physical_dag = self.run_single(dag)
-        print('physical_dag.circuit_qubits', physical_dag.qubits_used)
-        print(max(physical_dag.qubits_used))
         # physical_circuit = dag_to_circuit(physical_dag, physical_dag.circuit_qubits)
         physical_circuit = dag_to_circuit(physical_dag, max(physical_dag.qubits_used) + 1)
 
