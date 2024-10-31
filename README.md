@@ -49,8 +49,6 @@ from qsteed import *
 rqc = RandomCircuit(num_qubit=5, gates_number=100, gates_list=['cx', 'rx', 'rz', 'ry', 'h'])
 qc = rqc.random_circuit()
 
-# Set chip information (the number of chip qubits needs to be consistent
-# with the number of quantum circuit qubits)
 basis_gates = ['cx', 'rx', 'ry', 'rz', 'id', 'h']
 c_list = [(2, 3, 0.982), (3, 2, 0.982), (3, 4, 0.973), (4, 3, 0.973), 
           (0, 1, 0.98), (1, 0, 0.98), (1, 2, 0.97), (2, 1, 0.97)]
