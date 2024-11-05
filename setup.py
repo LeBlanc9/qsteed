@@ -81,4 +81,5 @@ setup(
             'qsteed-build_db = qsteed.first_build_db:first_build_db',
         ],
     },
+    cmake_install_dir="qsteed/passes/mapping/cpp_utils",
 )
